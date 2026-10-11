@@ -9,7 +9,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "fixture:seed": "tsx --env-file-if-exists=.env fixtures/supabase/scripts/seed-cloud.ts"
+    "fixture:seed": "tsx --env-file-if-exists=.env fixtures/supabase/scripts/seed-cloud.ts",
+    "inventory": "tsx --env-file-if-exists=.env src/cli.ts inventory"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.117.2",
@@ -17,5 +18,8 @@
     "supabase": "^2.119.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "postgres": "^3.4.9"
   }
 }
