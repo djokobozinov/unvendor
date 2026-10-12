@@ -6,7 +6,7 @@ Website: [unvendor.dev](https://unvendor.dev)
 
 Unvendor is an open source toolkit for converting a Backend-as-a-Service deployment into standard, self-hostable components: plain PostgreSQL, any OIDC identity provider and S3-compatible storage. The goal is to do this without a full rewrite of the app. Supabase is the first source platform and the reference implementation; others are planned through a source adapter interface.
 
-> **Status: early development.** No component is usable yet. See [What it does](#what-it-does) and the [roadmap](#roadmap).
+> **Status: early development.** Only a first version of the inventory exists; nothing can be migrated yet. See [What it does](#what-it-does) and the [roadmap](#roadmap).
 
 ## Why
 
@@ -28,7 +28,7 @@ Each component moves one part of the platform onto a standard replacement that c
 
 | # | Component | Target | Status |
 |---|-----------|--------|--------|
-| 1 | Inventory and source adapter interface | Report of everything that has to move | Planned |
+| 1 | Inventory and source adapter interface | Report of everything that has to move | In progress |
 | 2 | Auth migration | Any OIDC provider (Keycloak first; Authentik, Zitadel and others via SCIM 2.0 export) | Planned |
 | 3 | RLS translation | Plain PostgreSQL with a small shim schema | Planned |
 | 4 | Storage migration | S3-compatible storage (MinIO, Garage, Ceph) | Planned |
@@ -65,11 +65,66 @@ These apply to every component as it is built:
 ### What exists today
 
 - A Supabase test fixture in [`fixtures/supabase/`](fixtures/supabase/): tables with RLS policies that call `auth.uid()`, `auth.jwt()` and `auth.role()`, storage buckets with per-user folder policies, and a seed script. It is the source project used to develop and test the components above.
+- A first version of `unvendor inventory` for Supabase. See [Quick start](#quick-start).
 - The project website in [`site/`](site/).
 
 ## Quick start
 
-There is no runnable CLI yet. To set up the test fixture against a hosted Supabase project, see [`fixtures/supabase/README.md`](fixtures/supabase/README.md).
+The inventory command reads a Supabase project and reports what has to move. It only reads; it never writes to the project.
+
+Requires Node.js 22.9 or later. Put the project's database connection string in `.env` (see [`.env.example`](.env.example)):
+
+```
+SUPABASE_DB_URL=postgresql://postgres.<ref>:<password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+```
+
+Then run:
+
+```bash
+npm install
+npm run inventory                          # Markdown report to stdout
+npm run inventory -- --json --out inventory.json
+```
+
+To try it on the test fixture, set up a hosted Supabase project as described in [`fixtures/supabase/README.md`](fixtures/supabase/README.md).
+
+### Example
+
+Run against the fixture, the report starts like this (shortened):
+
+```markdown
+# Unvendor inventory
+
+Source: supabase, database `postgres`, PostgreSQL 17.11.
+
+## Summary
+
+| Item | Count | Has to move |
+|---|---|---|
+| App schemas | 1 | public |
+| Custom roles | 0 |  |
+| RLS policies using auth.* | 10 | Rewrite onto the shim schema (M3) |
+| Other RLS policies | 2 | Copy as is |
+| Storage buckets | 2 | avatars, documents |
+| App functions | 0 | 0 call auth.* |
+
+## RLS policies using auth.*
+
+| Table | Policy | Command | auth.* calls | USING |
+|---|---|---|---|---|
+| public.notes | notes: admin read | SELECT | auth.jwt() | `(((auth.jwt() -> 'app_metadata') ->> 'role') = 'admin')` |
+| public.notes | notes: own | ALL | auth.uid() | `(auth.uid() = owner_id)` |
+| public.orgs | orgs: create if logged in | INSERT | auth.role() |  |
+| storage.objects | documents: read own folder | SELECT | auth.uid() | `((bucket_id = 'documents') AND ((storage.foldername(name))[1] = (auth.uid())::text))` |
+| ... | | | | |
+
+## Not checked
+
+- Edge Functions and secrets: need the platform's management API, not read yet.
+- auth.* calls outside policies and functions (column defaults, views, triggers).
+```
+
+The full report also lists every schema, role, bucket and function, marks which ones the platform manages, and includes each policy's `WITH CHECK` clause.
 
 ## Roadmap
 
