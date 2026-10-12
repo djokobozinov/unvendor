@@ -94,7 +94,7 @@ The project is written in TypeScript. See [CONTRIBUTING.md](CONTRIBUTING.md) for
 
 ## Use of generative AI
 
-Parts of the documentation and code in this repository are written with help from a generative AI assistant (Claude). Commits with AI-assisted content say so in the commit message. A human reviews every change, is responsible for its correctness, and makes sure it can be published under Apache-2.0.
+Parts of the documentation and code in this repository are written with help from a generative AI assistant (Claude). Commits with AI-assisted content say so in the commit message, and each AI-assisted session is logged in [`docs/ai-log/`](docs/ai-log/). A human reviews every change, is responsible for its correctness, and makes sure it can be published under Apache-2.0.
 
 ## License
 
