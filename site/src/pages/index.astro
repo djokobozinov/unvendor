@@ -27,7 +27,7 @@ const problems = [
 const mappings = [
   { from: "Supabase Postgres", to: "PostgreSQL", note: "Schema, data and RLS policies" },
   { from: "Supabase Auth", to: "OIDC provider", note: "Keycloak first; Authentik, Zitadel via SCIM 2.0" },
-  { from: "Supabase Storage", to: "S3-compatible storage", note: "MinIO, Garage, Ceph" },
+  { from: "Supabase Storage", to: "S3-compatible storage", note: "SeaweedFS, Ceph Object Gateway" },
 ];
 
 const components = [
@@ -37,7 +37,7 @@ const components = [
   },
   {
     name: "Auth migration",
-    body: "Exports users, identities, password hashes and MFA factors. Imports into Keycloak through its native user import, keeping user IDs and bcrypt hashes so users don't have to reset their passwords. A SCIM 2.0 export covers other OIDC providers such as Authentik and Zitadel.",
+    body: "Exports users, identities, password hashes and MFA factors. Imports into Keycloak through its native user import, keeping user IDs and bcrypt hashes through a small Keycloak bcrypt provider, so users don't have to reset their passwords. A SCIM 2.0 export covers other OIDC providers such as Authentik and Zitadel.",
   },
   {
     name: "RLS translation",
@@ -45,7 +45,7 @@ const components = [
   },
   {
     name: "Storage migration",
-    body: "Copies buckets and objects to any S3-compatible backend (MinIO, Garage, Ceph) and translates the access rules into rules the new backend enforces.",
+    body: "Copies buckets and objects to any S3-compatible backend (SeaweedFS, Ceph Object Gateway), maps public buckets to anonymous read, keeps all other buckets private, and reports per-object rules with their original SQL.",
   },
   {
     name: "Verification and release",
@@ -63,7 +63,7 @@ const roadmap = [
   "Inventory and source adapter interface",
   "Auth migration → any OIDC provider (Keycloak first; SCIM 2.0 export for others)",
   "RLS translation → plain PostgreSQL with shim schema",
-  "Storage migration → S3-compatible storage (MinIO, Garage, Ceph)",
+  "Storage migration → S3-compatible storage (SeaweedFS, Ceph Object Gateway)",
   "Verification and release",
 ];
 
