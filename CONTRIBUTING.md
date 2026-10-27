@@ -7,7 +7,7 @@ Thanks for your interest. Unvendor is in early development and no component is u
 If you've moved off a Backend-as-a-Service platform (Supabase, Firebase, Appwrite, Nhost, PocketBase, ...), or tried and gave up, open an issue and describe:
 
 - What you were migrating (database and RLS policies, auth, storage, functions, ...).
-- Where you were moving to (plain PostgreSQL, an OIDC provider such as Keycloak, Authentik or Zitadel, S3-compatible storage such as MinIO, Garage or Ceph, something else).
+- Where you were moving to (plain PostgreSQL, an OIDC provider such as Keycloak, Authentik or Zitadel, S3-compatible storage such as MinIO or Ceph, something else).
 - What broke, what you had to do by hand, and any scripts you wrote.
 
 Links to public discussions, blog posts or repos are welcome. These shape the roadmap and the test suite.

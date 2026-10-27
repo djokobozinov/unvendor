@@ -31,7 +31,7 @@ Each component moves one part of the platform onto a standard replacement that c
 | 1 | Inventory and source adapter interface | Report of everything that has to move | In progress |
 | 2 | Auth migration | Any OIDC provider (Keycloak first; Authentik, Zitadel and others via SCIM 2.0 export) | Planned |
 | 3 | RLS translation | Plain PostgreSQL with a small shim schema | Planned |
-| 4 | Storage migration | S3-compatible storage (MinIO, Garage, Ceph) | Planned |
+| 4 | Storage migration | S3-compatible storage (MinIO, Ceph) | Planned |
 | 5 | Verification and release | End-to-end test harness, docs, npm package | Planned |
 
 1. **Inventory and source adapter interface.** Reads schemas, roles, RLS policies that use `auth.*`, buckets, functions and secrets from the source project and reports what has to move. Platform-specific reading sits behind an adapter interface, so other platforms can be added as sources later.
@@ -136,7 +136,7 @@ One milestone per component, tracked as [issues on GitHub](https://github.com/dj
   - Done when: fixture users log in to Keycloak with their original passwords.
 - [ ] **M3: RLS translation.** Shim for `auth.uid()`, `auth.jwt()` and `auth.role()` on transaction-local claims; policy rewriter; negative and differential tests.
   - Done when: every fixture policy is rewritten or reported, and the tests pass on plain PostgreSQL.
-- [ ] **M4: Storage migration.** Buckets and objects to S3-compatible storage (MinIO, Garage, Ceph); storage policies translated into rules the backend enforces.
+- [ ] **M4: Storage migration.** Buckets and objects to S3-compatible storage (MinIO, Ceph); storage policies translated into rules the backend enforces.
   - Done when: every fixture object is copied and the per-bucket, per-user access checks pass on the target.
 - [ ] **M5: Verification and release.** End-to-end harness on a copy comparing row counts, logins and access; documentation; reproducible npm package; security review fixes.
   - Done when: the full migration of `fixtures/supabase` passes the harness and the package is published on npm.
